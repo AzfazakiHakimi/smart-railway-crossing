@@ -1,0 +1,110 @@
+int trig_jauh = 3;
+int trig_sedang = 5;
+int trig_dekat = 7;
+
+int echo_jauh = 2;
+int echo_sedang = 4;
+int echo_dekat = =6;
+
+int speaker = 13;
+
+double waktu_jauh;
+double waktu_sedang;
+double waktu_dekat;
+
+double jarak_jauh;
+double jarak_sedang;
+double jarak_dekat;
+
+bool interrupt_jauh = false;
+bool interrupt_sedang = false;
+bool interrupt_dekat = false;
+
+void sensorON(int trigPin) {
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+}
+
+void baca_jauh(){
+if(digitalRead(echo_jauh) == HIGH) {
+waktu_jauh = micros();
+    		interrupt_jauh = true;
+  	}
+}
+
+void baca_sedang(){
+if(digitalRead(echo_sedang) == HIGH) {
+waktu_jauh = micros();
+    		interrupt_jauh = true;
+  	}
+}
+
+void baca_dekat(){
+if(digitalRead(echo_dekat) == HIGH) {
+waktu_jauh = micros();
+    		interrupt_jauh = true;
+  	}
+}
+
+
+void setup(){
+Serial.begin(9600);
+pinMode(trig_jauh, OUTPUT);
+pinMode(trig_sedang, OUTPUT);
+pinMode(trig_dekat, OUTPUT);
+pinMode(speaker, OUTPUT);
+
+pinMode(echo_jauh, INPUT);
+pinMode(echo_sedang, INPUT);
+pinMode(echo_dekat, INPUT);
+
+attachInterrupt(digitalPinToInterrupt(echo_jauh), baca_jauh, CHANGE);
+attachInterrupt(digitalPinToInterrupt(echo_sedang), baca_sedang, CHANGE);
+attachInterrupt(digitalPinToInterrupt(echo_dekat), baca_dekat, CHANGE);
+}
+
+void loop(){
+sensorON(trig_jauh);
+if (interrupt_jauh) {
+    jarak_jauh = waktu_jauh * 0.034 / 2;
+    interrupt_jauh = false;
+}
+
+sensorON(trig_sedang);
+if (interrupt_sedang) {
+    jarak_sedang = waktu_sedang * 0.034 / 2;
+    interrupt_sedang = false;
+}
+
+sensorON(trig_dekat);
+if (interrupt_dekat){
+    jarak_dekat = waktu_dekat * 0.034 / 2;
+    interrupt_dekat = false;
+}
+
+if (jarak_jauh < 5){
+ 	Serial.println("Kereta Masih Jauh");
+  	tone(speaker, 5000);
+    delay(1000);
+    noTone(speaker);;
+  }
+
+if (jarak_sedang < 5){
+    Serial.println("Kereta Mulai Dekat");
+    tone(speaker, 5000);
+    delay(100);
+    noTone(speaker);
+  }
+
+if (jarak_dekat < 5){
+	Serial.println("Kereta Sudah Dekat");
+    tone(speaker, 5000);
+    delay(10);
+    noTone(speaker);
+}
+
+delay(1000);
+}
