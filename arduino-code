@@ -106,5 +106,5 @@ if (jarak_dekat < 5){
     noTone(speaker);
 }
 
-delay(1000);
+delay(1);
 }
